@@ -204,7 +204,7 @@ class ImageTab(QWidget):
                 w.deleteLater()
         self._batch_bar.setVisible(False)
 
-        items = get_items(item_type="image", limit=50)
+        items = get_items(item_type="image", limit=30, include_image_data=False)
         self._loaded = True
         if not items:
             self._empty.setVisible(True)

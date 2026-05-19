@@ -57,3 +57,7 @@ class ClipboardMonitor(QObject):
 
     def mark_skip_next(self):
         self._skip_next = True
+        # Also remember current clipboard text so we don't re-detect it
+        text = self._clipboard.text()
+        if text:
+            self._last_text = text

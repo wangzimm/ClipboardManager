@@ -241,29 +241,21 @@ def restore_from_recycle(item_id):
 
 
 def restore_all_recycle():
-    """Restore ALL items from recycle bin back to clipboard_items."""
+    """Restore ALL items from recycle bin back to clipboard_items using SQL-level bulk move."""
     conn = _connect()
-    rows = conn.execute(
-        "SELECT type, content, image_data, content_hash, pinned, favorite, original_created_at "
-        "FROM recycle_bin LIMIT 2000"
-    ).fetchall()
     conn.execute("BEGIN")
-    for row in rows:
-        existing = conn.execute(
-            "SELECT id FROM clipboard_items WHERE content_hash = ? ORDER BY id DESC LIMIT 1",
-            (row[3],),
-        ).fetchone()
-        if existing:
-            conn.execute(
-                "UPDATE clipboard_items SET created_at = datetime('now','localtime') WHERE id = ?",
-                (existing[0],),
-            )
-        else:
-            conn.execute(
-                "INSERT INTO clipboard_items (type, content, image_data, content_hash, pinned, favorite, created_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (row[0], row[1], row[2], row[3], row[4], row[5], row[6]),
-            )
+    # Update timestamps for items that already exist in main table (by content_hash)
+    conn.execute("""
+        UPDATE clipboard_items SET created_at = datetime('now','localtime')
+        WHERE content_hash IN (SELECT content_hash FROM recycle_bin)
+    """)
+    # Insert items that don't already exist
+    conn.execute("""
+        INSERT INTO clipboard_items (type, content, image_data, content_hash, pinned, favorite, created_at)
+        SELECT r.type, r.content, r.image_data, r.content_hash, r.pinned, r.favorite, r.original_created_at
+        FROM recycle_bin r
+        WHERE r.content_hash NOT IN (SELECT content_hash FROM clipboard_items)
+    """)
     conn.execute("DELETE FROM recycle_bin")
     conn.execute("COMMIT")
     count = conn.execute("SELECT changes()").fetchone()[0]
@@ -367,10 +359,11 @@ def is_favorite(item_id):
     return bool(row[0]) if row else False
 
 
-def get_favorites(limit=100, offset=0):
+def get_favorites(limit=100, offset=0, include_image_data=True):
     conn = _connect()
+    image_col = "image_data" if include_image_data else "NULL as image_data"
     rows = conn.execute(
-        "SELECT id, type, content, image_data, pinned, created_at, favorite "
+        f"SELECT id, type, content, {image_col}, pinned, created_at, favorite "
         "FROM clipboard_items WHERE favorite = 1 "
         "ORDER BY pinned DESC, created_at DESC LIMIT ? OFFSET ?",
         (limit, offset),

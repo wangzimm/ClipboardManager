@@ -195,7 +195,7 @@ class FavoriteTab(QWidget):
                 w.deleteLater()
         self._batch_bar.setVisible(False)
 
-        items = get_favorites(limit=50)
+        items = get_favorites(limit=30, include_image_data=False)
         self._loaded = True
         if not items:
             self._empty.setVisible(True)

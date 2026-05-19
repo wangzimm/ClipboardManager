@@ -143,8 +143,14 @@ class CardWidget(QFrame):
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
 
+        # Lazy-load image data if this is an image card without preloaded data
+        image_data = item_data[3]
+        if self._type == "image" and not image_data:
+            from database import get_image_data
+            image_data = get_image_data(self._id)
+
         self._normal_pixmap = None
-        self._normal_view = self._create_normal_view(item_data[3])
+        self._normal_view = self._create_normal_view(image_data)
         self._action_view = None  # lazy — only created on first click
 
         root.addWidget(self._normal_view)
@@ -240,12 +246,12 @@ class CardWidget(QFrame):
             if image_data:
                 pix.loadFromData(image_data)
             if not pix.isNull():
-                if pix.width() > 320:
-                    pix = pix.scaledToWidth(320, Qt.TransformationMode.SmoothTransformation)
-                if pix.height() > 120:
-                    pix = pix.scaledToHeight(120, Qt.TransformationMode.SmoothTransformation)
+                if pix.width() > 200:
+                    pix = pix.scaledToWidth(200, Qt.TransformationMode.SmoothTransformation)
+                if pix.height() > 80:
+                    pix = pix.scaledToHeight(80, Qt.TransformationMode.SmoothTransformation)
             else:
-                pix = QPixmap(320, 60)
+                pix = QPixmap(200, 40)
                 pix.fill(QColor("#EEEEEE"))
                 p = QPainter(pix)
                 p.setPen(QColor("#BDBDBD"))
@@ -254,7 +260,7 @@ class CardWidget(QFrame):
             self._normal_pixmap = pix
             thumb.setPixmap(pix)
             thumb.setScaledContents(True)
-            thumb.setMaximumHeight(120)
+            thumb.setMaximumHeight(80)
             thumb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
             top.addWidget(thumb, stretch=1)
         else:
@@ -311,10 +317,6 @@ class CardWidget(QFrame):
             thumb = QLabel()
             if self._normal_pixmap and not self._normal_pixmap.isNull():
                 pix = QPixmap(self._normal_pixmap)
-                if pix.width() > 200:
-                    pix = pix.scaledToWidth(200, Qt.TransformationMode.SmoothTransformation)
-                if pix.height() > 80:
-                    pix = pix.scaledToHeight(80, Qt.TransformationMode.SmoothTransformation)
             else:
                 pix = QPixmap(200, 40)
                 pix.fill(QColor("#EEEEEE"))

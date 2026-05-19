@@ -85,7 +85,7 @@ class App:
     def _on_image(self, data):
         item_id = add_image_item(data)
         if item_id:
-            items = get_items(item_type="image", limit=1)
+            items = get_items(item_type="image", limit=1, include_image_data=False)
             if items:
                 self._window._image_tab.add_card(items[0])
 
