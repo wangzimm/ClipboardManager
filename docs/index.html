@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>历史粘贴板 — Windows 剪贴板管理器</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --card: #fff;
+    --text: #333;
+    --muted: #888;
+    --accent: #4f46e5;
+    --border: #e5e5e5;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font: 15px/1.6 -apple-system, "Microsoft YaHei", sans-serif;
+    color: var(--text);
+    background: var(--bg);
+  }
+  .hero {
+    text-align: center;
+    padding: 80px 24px 60px;
+  }
+  .hero h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto 32px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform .15s;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-outline {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    margin-left: 12px;
+  }
+  .demo {
+    max-width: 720px;
+    margin: 0 auto 60px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  }
+  .demo img { width: 100%; display: block; }
+  .features {
+    max-width: 900px;
+    margin: 0 auto 80px;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .feature {
+    background: var(--card);
+    padding: 28px 24px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .feature h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .feature p {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .feature .icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .start {
+    max-width: 640px;
+    margin: 0 auto 80px;
+    padding: 0 24px;
+  }
+  .start h2 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .start pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 20px 24px;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    color: var(--muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  @media (max-width: 640px) {
+    .hero { padding: 48px 16px 36px; }
+    .hero h1 { font-size: 28px; }
+    .btn-outline { margin-left: 0; margin-top: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <h1>历史粘贴板</h1>
+  <p>静默运行在 Windows 系统托盘，自动记录复制历史。任何时候按 <strong>Ctrl+Shift+V</strong> 就能找回之前的内容。</p>
+  <div>
+    <a href="https://github.com" class="btn btn-primary">下载 exe</a>
+    <a href="https://github.com" class="btn btn-outline">查看源码</a>
+  </div>
+</section>
+
+<!-- 演示图占位 — 替换为实际截图/GIF -->
+<div class="demo">
+  <img src="demo.gif" alt="历史粘贴板演示" onerror="this.parentElement.style.display='none'">
+</div>
+
+<section class="features">
+  <div class="feature">
+    <span class="icon">📋</span>
+    <h3>自动记录</h3>
+    <p>文字和图片自动入库，重复内容智能去重，更新时间而非新增记录。</p>
+  </div>
+  <div class="feature">
+    <span class="icon">🔍</span>
+    <h3>即时搜索</h3>
+    <p>输入关键词快速过滤，在几千条记录中瞬间定位目标。</p>
+  </div>
+  <div class="feature">
+    <span class="icon">📌</span>
+    <h3>置顶 & 回收站</h3>
+    <p>高频内容一键置顶永不过期；误删内容进回收站，7 天内可恢复。</p>
+  </div>
+  <div class="feature">
+    <span class="icon">🔒</span>
+    <h3>纯本地存储</h3>
+    <p>数据存于 SQLite 本地文件，零网络请求，隐私不外泄。</p>
+  </div>
+  <div class="feature">
+    <span class="icon">⚡</span>
+    <h3>全局热键</h3>
+    <p>Ctrl+Shift+V 呼出面板，Esc 隐藏，不打断当前工作流。</p>
+  </div>
+  <div class="feature">
+    <span class="icon">🫥</span>
+    <h3>边缘浮动</h3>
+    <p>48px 图标靠边可缩为 8px 细条，触碰即展开，不占屏幕空间。</p>
+  </div>
+</section>
+
+<section class="start">
+  <h2>快速开始</h2>
+  <p style="text-align:center;margin-bottom:24px;color:var(--muted)">下载 exe 双击运行，或从源码启动</p>
+  <pre><code># 安装依赖
+pip install -r requirements.txt
+
+# 运行
+python src/main.py
+
+# 打包
+pyinstaller build.spec</code></pre>
+  <p style="text-align:center;color:var(--muted);font-size:13px">
+    支持 Windows 10 / 11  ·  Python 3.14  ·  PySide6 + SQLite
+  </p>
+</section>
+
+<footer>
+  MIT License  ·  <a href="https://github.com">GitHub</a>
+</footer>
+
+</body>
+</html>
