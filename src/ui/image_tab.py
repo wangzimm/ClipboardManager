@@ -183,7 +183,7 @@ class ImageTab(QWidget):
         self._empty.setVisible(False)
         card = CardWidget(item_data)
         self._connect_card(card)
-        self._card_layout.insertWidget(self._card_layout.count() - 1, card)
+        self._card_layout.insertWidget(0, card)
         self._cards[item_id] = card
 
     def _connect_card(self, card):
