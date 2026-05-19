@@ -1,5 +1,4 @@
 from PySide6.QtCore import QTimer, QObject, Signal
-from PySide6.QtGui import QClipboard
 from PySide6.QtWidgets import QApplication
 
 
@@ -24,7 +23,9 @@ class ClipboardMonitor(QObject):
             self._skip_next = False
             return
 
-        if self._clipboard.mimeData().hasImage():
+        mime = self._clipboard.mimeData()
+
+        if mime.hasImage():
             image = self._clipboard.image()
             if not image.isNull():
                 key = image.cacheKey()
@@ -37,13 +38,22 @@ class ClipboardMonitor(QObject):
                     image.save(buf, "PNG")
                     buf.close()
                     self.image_copied.emit(bytes(ba))
-                return
 
-        if self._clipboard.mimeData().hasText():
-            text = self._clipboard.text()
+        if mime.hasText() or mime.hasHtml():
+            text = mime.text()
+            if not text and mime.hasHtml():
+                text = mime.html()
             if text and text != self._last_text:
                 self._last_text = text
                 self.text_copied.emit(text)
+
+        elif mime.hasUrls():
+            urls = mime.urls()
+            if urls:
+                text = "\n".join(u.toLocalFile() or u.toString() for u in urls)
+                if text and text != self._last_text:
+                    self._last_text = text
+                    self.text_copied.emit(text)
 
     def mark_skip_next(self):
         self._skip_next = True
